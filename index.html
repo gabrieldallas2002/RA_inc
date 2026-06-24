@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>R.A, Inc — Bitácora Avanzada · Dallas Gabriel</title>
+<meta name="description" content="Bitácora Digital · Compilación de Portafolio — Representación Avanzada. Modelado y render en Autodesk Fusion 360. RA Productora.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Michroma&family=Space+Grotesk:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --void:#04060c;
+    --void-2:#070b15;
+    --panel:#0a0f1c;
+    --panel-2:#0c121f;
+    --line:#1c2740;
+    --line-bright:#2b3c5e;
+    --ink:#e9eff8;
+    --ink-dim:#8b99b4;
+    --ink-faint:#5a6680;
+    --cyan:#67d3e3;
+    --cyan-soft:#9ee4ef;
+    --amber:#e9a23c;
+    --glow-cyan:rgba(103,211,227,.28);
+    --maxw:1180px;
+    --r:3px;
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    background:var(--void);
+    color:var(--ink);
+    font-family:"Space Grotesk",system-ui,sans-serif;
+    font-weight:400;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  /* faint nebula depth, fixed behind everything */
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    z-index:-2;
+    background:
+      radial-gradient(120% 90% at 18% 22%, rgba(103,211,227,.10), transparent 55%),
+      radial-gradient(100% 80% at 84% 12%, rgba(118,96,196,.10), transparent 55%),
+      radial-gradient(140% 120% at 50% 105%, rgba(38,82,150,.14), transparent 60%),
+      linear-gradient(180deg,#05070f 0%,#04060c 60%,#03050a 100%);
+  }
+  #stars{position:fixed;inset:0;z-index:-1;pointer-events:none}
+
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px}
+
+  a{color:inherit;text-decoration:none}
+
+  .mono{font-family:"Space Mono",ui-monospace,monospace}
+  .eyebrow{
+    font-family:"Space Mono",monospace;
+    font-size:.72rem;
+    letter-spacing:.34em;
+    text-transform:uppercase;
+    color:var(--cyan);
+  }
+
+  /* ---------- HUD top bar ---------- */
+  .hud{
+    position:fixed;top:0;left:0;right:0;z-index:50;
+    display:flex;align-items:center;justify-content:space-between;
+    gap:18px;
+    padding:14px 28px;
+    background:linear-gradient(180deg,rgba(4,6,12,.92),rgba(4,6,12,.55) 70%,transparent);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line);
+  }
+  .brand{display:flex;align-items:center;gap:11px;font-family:"Michroma",sans-serif;font-size:.92rem;letter-spacing:.12em}
+  .brand .dot{width:7px;height:7px;border-radius:50%;background:var(--amber);box-shadow:0 0 9px var(--amber);flex:0 0 auto}
+  .brand b{font-weight:400}
+  .brand .inc{color:var(--cyan)}
+  .hud-meta{display:flex;align-items:center;gap:22px;font-family:"Space Mono",monospace;font-size:.68rem;letter-spacing:.2em;color:var(--ink-dim);text-transform:uppercase}
+  .hud-meta a{transition:color .2s}
+  .hud-meta a:hover{color:var(--cyan)}
+  .hud-meta .tag{color:var(--ink);border:1px solid var(--line-bright);padding:5px 10px;border-radius:var(--r)}
+  .hud-meta .tag.amber{color:var(--amber);border-color:rgba(233,162,60,.4)}
+  .hud-links{display:flex;gap:20px}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;
+    min-height:100svh;
+    display:flex;flex-direction:column;justify-content:center;
+    padding:150px 0 70px;
+  }
+  .hero-inner{max-width:920px}
+  .hero .eyebrow{display:block;opacity:0;transform:translateY(12px);animation:rise .8s .15s cubic-bezier(.2,.7,.2,1) forwards}
+
+  .title{
+    font-family:"Michroma",sans-serif;
+    font-weight:400;
+    font-size:clamp(2.05rem,7.4vw,5.4rem);
+    line-height:1.04;
+    letter-spacing:.02em;
+    margin:.32em 0 .12em;
+    background:linear-gradient(180deg,#f3fbfd 0%,#cfeef4 52%,#a7dbe6 100%);
+    -webkit-background-clip:text;background-clip:text;
+    -webkit-text-fill-color:transparent;color:transparent;
+    text-shadow:0 0 38px var(--glow-cyan);
+    opacity:0;transform:translateY(16px);animation:rise .9s .3s cubic-bezier(.2,.7,.2,1) forwards;
+  }
+  .author{
+    font-family:"Michroma",sans-serif;
+    font-size:clamp(1.05rem,3vw,1.85rem);
+    letter-spacing:.16em;
+    color:var(--ink);
+    margin:0 0 22px;
+    opacity:0;transform:translateY(14px);animation:rise .9s .42s cubic-bezier(.2,.7,.2,1) forwards;
+  }
+  .author span{color:var(--ink-faint);margin-right:.55em}
+  .lede{
+    font-size:clamp(1rem,1.4vw,1.18rem);
+    color:var(--ink-dim);
+    max-width:50ch;
+    font-weight:300;
+    opacity:0;transform:translateY(14px);animation:rise .9s .54s cubic-bezier(.2,.7,.2,1) forwards;
+  }
+  .lede b{color:var(--cyan-soft);font-weight:500}
+
+  /* telemetry strip — the "ship's log" signature */
+  .telemetry{
+    margin-top:46px;
+    display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+    border:1px solid var(--line);border-radius:var(--r);
+    background:linear-gradient(180deg,rgba(10,15,28,.7),rgba(7,11,21,.5));
+    opacity:0;transform:translateY(16px);animation:rise .9s .66s cubic-bezier(.2,.7,.2,1) forwards;
+  }
+  .tcell{padding:15px 18px;border-right:1px solid var(--line)}
+  .tcell:last-child{border-right:none}
+  .tcell .k{font-family:"Space Mono",monospace;font-size:.6rem;letter-spacing:.26em;color:var(--ink-faint);text-transform:uppercase}
+  .tcell .v{font-family:"Space Mono",monospace;font-size:.92rem;color:var(--ink);margin-top:6px;letter-spacing:.04em}
+  .tcell .v.cy{color:var(--cyan)}
+  .tcell .v.am{color:var(--amber)}
+
+  .scroll-cue{
+    position:absolute;left:28px;bottom:26px;
+    font-family:"Space Mono",monospace;font-size:.62rem;letter-spacing:.28em;color:var(--ink-faint);
+    text-transform:uppercase;display:flex;align-items:center;gap:10px;
+    opacity:0;animation:fade 1s 1s forwards;
+  }
+  .scroll-cue::before{content:"";width:1px;height:34px;background:linear-gradient(var(--cyan),transparent);animation:cue 2.4s ease-in-out infinite}
+
+  /* botón Drive */
+  .drive-btn{
+    display:inline-flex;align-items:center;gap:10px;margin-top:28px;
+    font-family:"Space Mono",monospace;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--cyan);text-decoration:none;
+    border:1px solid rgba(103,211,227,.4);border-radius:var(--r);padding:13px 22px;
+    transition:background .22s ease,color .22s ease,border-color .22s ease,box-shadow .22s ease;
+    opacity:0;transform:translateY(14px);animation:rise .9s .78s cubic-bezier(.2,.7,.2,1) forwards;
+  }
+  .drive-btn:hover{color:var(--void);background:var(--cyan);border-color:var(--cyan);box-shadow:0 0 24px var(--glow-cyan)}
+  .drive-btn .arr{font-size:.95rem;line-height:1}
+
+  /* ---------- PROJECTS ---------- */
+  .section-head{
+    display:flex;align-items:flex-end;justify-content:space-between;
+    gap:24px;flex-wrap:wrap;
+    padding:54px 0 26px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:40px;
+  }
+  .section-head h2{
+    font-family:"Michroma",sans-serif;font-weight:400;
+    font-size:clamp(1.3rem,3.4vw,2.1rem);letter-spacing:.04em;margin:8px 0 0;
+  }
+  .section-head .sub{font-family:"Space Mono",monospace;font-size:.72rem;letter-spacing:.18em;color:var(--ink-dim);text-transform:uppercase}
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:22px;
+    padding-bottom:80px;
+  }
+
+  .card{
+    position:relative;
+    border:1px solid var(--line);
+    background:linear-gradient(180deg,var(--panel),var(--panel-2));
+    border-radius:var(--r);
+    overflow:hidden;
+    transition:border-color .3s ease, transform .3s ease, box-shadow .3s ease;
+  }
+  .card:hover{
+    border-color:var(--line-bright);
+    transform:translateY(-4px);
+    box-shadow:0 18px 40px -22px rgba(0,0,0,.9), 0 0 0 1px rgba(103,211,227,.08);
+  }
+
+  .card-top{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:11px 14px;border-bottom:1px solid var(--line);
+    font-family:"Space Mono",monospace;font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-dim);
+  }
+  .card-top .idx{color:var(--cyan)}
+  .card-top .stat{display:flex;align-items:center;gap:7px;color:var(--ink-faint)}
+  .card-top .stat i{width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 7px var(--cyan);font-style:normal}
+
+  .thumb{
+    position:relative;
+    aspect-ratio:4/3;
+    background:
+      linear-gradient(180deg,rgba(103,211,227,.04),transparent),
+      repeating-linear-gradient(0deg,rgba(255,255,255,.018) 0 1px,transparent 1px 26px),
+      linear-gradient(135deg,#0a1120,#0b1424);
+    cursor:pointer;
+    overflow:hidden;
+    display:block;width:100%;border:0;padding:0;
+    color:inherit;
+  }
+  .thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease, opacity .3s ease}
+  .card:hover .thumb img{transform:scale(1.045)}
+  /* HUD corner ticks */
+  .thumb::before,.thumb::after{content:"";position:absolute;width:16px;height:16px;z-index:3;pointer-events:none;transition:border-color .3s, width .3s, height .3s}
+  .thumb::before{top:9px;left:9px;border-top:1px solid var(--line-bright);border-left:1px solid var(--line-bright)}
+  .thumb::after{bottom:9px;right:9px;border-bottom:1px solid var(--line-bright);border-right:1px solid var(--line-bright)}
+  .card:hover .thumb::before,.card:hover .thumb::after{border-color:var(--cyan);width:22px;height:22px}
+
+  .thumb .empty-state{
+    position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;
+    text-align:center;padding:18px;z-index:2;transition:opacity .3s;
+  }
+  .thumb .empty-state .ring{
+    width:34px;height:34px;border-radius:50%;border:1px solid var(--line-bright);
+    display:flex;align-items:center;justify-content:center;color:var(--cyan);font-size:1.1rem;line-height:1;
+  }
+  .thumb .empty-state .hint{font-family:"Space Mono",monospace;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint)}
+  .card:hover .thumb .empty-state .ring{border-color:var(--cyan);color:var(--cyan-soft)}
+  .thumb.has-img .empty-state{opacity:0;pointer-events:none}
+
+  .card-body{padding:16px 16px 18px}
+  .card-body h3{font-size:1.05rem;font-weight:500;margin:0 0 6px;letter-spacing:.01em}
+  .card-body p{font-size:.84rem;color:var(--ink-dim);margin:0;font-weight:300;min-height:2.6em}
+
+  .card-foot{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:12px 16px;border-top:1px solid var(--line);
+  }
+  .badge{
+    font-family:"Space Mono",monospace;font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--cyan);border:1px solid rgba(103,211,227,.32);border-radius:var(--r);padding:5px 9px;
+  }
+  .load-btn{
+    appearance:none;background:transparent;border:1px solid var(--line-bright);border-radius:var(--r);
+    color:var(--ink-dim);font-family:"Space Mono",monospace;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+    padding:5px 10px;cursor:pointer;transition:.2s;
+  }
+  .load-btn:hover{color:var(--void);background:var(--cyan);border-color:var(--cyan)}
+
+  /* ---------- FOOTER ---------- */
+  footer{border-top:1px solid var(--line);padding:34px 0 60px;margin-top:30px}
+  .foot-grid{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+  .foot-brand{font-family:"Michroma",sans-serif;font-size:.86rem;letter-spacing:.1em;display:flex;align-items:center;gap:10px}
+  .foot-brand .dot{width:6px;height:6px;border-radius:50%;background:var(--amber);box-shadow:0 0 8px var(--amber)}
+  .foot-meta{font-family:"Space Mono",monospace;font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);display:flex;gap:18px;flex-wrap:wrap}
+  .foot-meta .cy{color:var(--cyan)}
+
+  /* ---------- focus / motion ---------- */
+  :focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:2px}
+
+  @keyframes rise{to{opacity:1;transform:translateY(0)}}
+  @keyframes fade{to{opacity:1}}
+  @keyframes cue{0%,100%{opacity:.25;transform:scaleY(.6)}50%{opacity:1;transform:scaleY(1)}}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important;transition:none !important}
+    .hero .eyebrow,.title,.author,.lede,.telemetry,.drive-btn,.scroll-cue{opacity:1 !important;transform:none !important}
+    html{scroll-behavior:auto}
+  }
+
+  /* ---------- responsive ---------- */
+  @media (max-width:900px){
+    .grid{grid-template-columns:repeat(2,1fr)}
+    .hud-links{display:none}
+  }
+  @media (max-width:620px){
+    .wrap{padding:0 18px}
+    .hud{padding:12px 18px}
+    .hud-meta .tag{display:none}
+    .hud-meta{gap:0}
+    .grid{grid-template-columns:1fr}
+    .telemetry{grid-template-columns:repeat(2,1fr)}
+    .tcell:nth-child(2){border-right:none}
+    .tcell:nth-child(1),.tcell:nth-child(2){border-bottom:1px solid var(--line)}
+    .scroll-cue{display:none}
+    .hero{padding-top:120px}
+    .author span{display:block;margin:0 0 4px}
+  }
+</style>
+</head>
+<body>
+<canvas id="stars" aria-hidden="true"></canvas>
+
+<!-- ====== HUD BAR ====== -->
+<header class="hud">
+  <div class="brand"><span class="dot"></span><b>R.A,</b>&nbsp;<span class="inc">Inc</span></div>
+  <nav class="hud-meta" aria-label="Información del estudio">
+    <div class="hud-links">
+      <a href="#top">Bitácora</a>
+      <a href="#proyectos">Proyectos</a>
+    </div>
+    <span class="tag">Fusion 360</span>
+    <span class="tag amber">RA Productora</span>
+  </nav>
+</header>
+
+<!-- ====== HERO ====== -->
+<main id="top">
+<section class="hero">
+  <div class="wrap hero-inner">
+    <span class="eyebrow">Bitácora Digital · Compilación de Portafolio</span>
+    <h1 class="title">Bitácora Avanzada</h1>
+    <p class="author"><span>//</span>Dallas Gabriel</p>
+    <p class="lede">Registro de modelado y renderizado para la materia <b>Representación Avanzada</b>. Cada entrada documenta un proyecto desarrollado en Autodesk Fusion 360.</p>
+
+    <div class="telemetry" role="group" aria-label="Datos del portafolio">
+      <div class="tcell"><div class="k">Sector</div><div class="v">Rep. Avanzada</div></div>
+      <div class="tcell"><div class="k">Entradas</div><div class="v cy">10</div></div>
+      <div class="tcell"><div class="k">Software</div><div class="v">Fusion 360</div></div>
+      <div class="tcell"><div class="k">Estudio</div><div class="v am">RA Productora</div></div>
+    </div>
+
+    <a class="drive-btn" href="https://drive.google.com/drive/folders/1L4Jy7Z_lnhHK1CVEYNVW1tce8NOJ4837" target="_blank" rel="noopener"><span class="arr">↗</span>Ver archivos en Drive</a>
+  </div>
+  <div class="scroll-cue">Descender al registro</div>
+</section>
+
+<!-- ====== PROYECTOS ====== -->
+<section id="proyectos" class="wrap">
+  <div class="section-head">
+    <div>
+      <span class="eyebrow">Registro de proyectos</span>
+      <h2>Entradas de la bitácora</h2>
+    </div>
+    <span class="sub">// 10 entradas · Autodesk Fusion 360</span>
+  </div>
+  <div class="grid" id="grid"></div>
+</section>
+</main>
+
+<!-- ====== FOOTER ====== -->
+<footer>
+  <div class="wrap foot-grid">
+    <div class="foot-brand"><span class="dot"></span>R.A,&nbsp;<span style="color:var(--cyan)">Inc</span></div>
+    <div class="foot-meta">
+      <span>RA Productora</span>
+      <span>Representación Avanzada · 2026</span>
+      <span class="cy">Compilado en Fusion 360</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* =========================================================================
+   EDITÁ ACÁ TUS PROYECTOS
+   - titulo : el nombre que querés mostrar
+   - desc   : una descripción corta (1–2 líneas)
+   - img    : la ruta de la imagen dentro de la carpeta /img de tu repo.
+              Subí tus imágenes a la carpeta "img" con estos nombres
+              (img/p01.jpg ... img/p10.jpg) y aparecerán solas.
+   También podés hacer clic en cualquier recuadro para previsualizar
+   una imagen desde tu compu (esa vista es temporal, no se guarda).
+   ========================================================================= */
+const proyectos = [
+  { titulo:"BATALLA PERSONAL - STAR WARS - XWing", desc:"Modelar la XWing simplificada desde la generación de los croquis o bocetos base mediante comandos variados utilizando Extrusión, Revolución, Barrido y Solevado sencillo.", img:"img/p01.jpg" },
+  { titulo:"RESCATE STAR WARS - TIE Fighter", desc:"Modelar la TIE Fighter (Nave imperial de combate rápido) simplificada desde la generación de los croquis o bocetos base mediante comandos variados utilizando Extrusión, Revolución, Barrido y Solevado sencillo.", img:"img/p02.jpg" },
+  { titulo:"GRAN VIAJE PERSONAL - EL CHIP DE INVENCIÓN", desc:"Modelar la NAVE DE FAMILIA ROBINSON simplificada desde la generación de los croquis o bocetos base mediante comandos variados utilizando Simetría, Extrusión, Revolución, Barrido avanzado y Solevado avanzado.", img:"img/p03.jpg" },
+  { titulo:"GRAN VIAJE PERSONAL - FORJANDO A E.V.E.", desc:"Modelar a E.V.E. simplificada dotándola de personalidad propia; desde la generación de los croquis o bocetos base mediante comandos de superficie utilizando Simetría, Extrusión, Revolución, Barrido avanzado y Solevado avanzado, parche, coser, vaciar, dar espesor.", img:"img/p04.jpg" },
+  { titulo:"Ensamblado de la cabeza de WALL*E", desc:"Ensamblado de la cabeza de WALL*E con las piezas suministradas.", img:"img/p05.jpg" },
+  { titulo:"PERSONAL - DIRECTIVA AXIOMA EN TIEMPO REAL", desc:"Generar los planos técnicos durante el encuentro, aplicando los conceptos de documentación trabajados.El foco está en resolver, decidir y producir en tiempo real, no en la perfección final.", img:"img/p06.jpg" },
+  { titulo:"Materialización con Slicer", desc:"Exportar como STL/OBJ para Slicer y realizar los cortes correspondientes para su fabricación.", img:"img/p07.jpg" },
+  { titulo:"PERSONAL: REPARO MÁXIMA", desc:"Cada aprendiz deberá revisar, corregir y optimizar la reconstrucción digital del Campo de Quidditch, elevando el nivel de resolución técnica, organización topológica y calidad formal del modelo.", img:"img/p08.jpg" },
+  { titulo:"PERSONAL: EL BATIMOVIL SALE DE LA BATICUEVA", desc:"Renderiza tu versión del Batimóvil  utilizando técnicas de Renderizado de FUSION360  ", img:"img/p09.jpg" },
+  { titulo:"BIG HERO CHAMPIONS LEAGUE", desc:"Modelado del puño de Baymax con su armadura.", img:"img/p10.jpg" },
+];
+
+const grid = document.getElementById('grid');
+
+proyectos.forEach((p, i) => {
+  const n = String(i + 1).padStart(2, '0');
+  const card = document.createElement('article');
+  card.className = 'card';
+  card.innerHTML = `
+    <div class="card-top">
+      <span class="idx">Entrada ${n}</span>
+      <span class="stat"><i></i>Activo</span>
+    </div>
+    <button class="thumb" type="button" aria-label="Cargar imagen para ${p.titulo}">
+      <img alt="${p.titulo}">
+      <span class="empty-state">
+        <span class="ring">+</span>
+        <span class="hint">Sin imagen · clic para cargar</span>
+      </span>
+    </button>
+    <div class="card-body">
+      <h3>${p.titulo}</h3>
+      <p>${p.desc}</p>
+    </div>
+    <div class="card-foot">
+      <span class="badge">Fusion 360</span>
+      <button class="load-btn" type="button">Cargar imagen</button>
+    </div>
+  `;
+  grid.appendChild(card);
+
+  const thumb = card.querySelector('.thumb');
+  const img   = card.querySelector('img');
+
+  // Intentar cargar la imagen del repo (img/pXX.jpg). Si no existe, queda el placeholder.
+  img.onload  = () => thumb.classList.add('has-img');
+  img.onerror = () => { thumb.classList.remove('has-img'); img.removeAttribute('src'); };
+  img.src = p.img;
+
+  // Previsualización local desde la compu (temporal, no se guarda)
+  const file = document.createElement('input');
+  file.type = 'file';
+  file.accept = 'image/*';
+  file.style.display = 'none';
+  card.appendChild(file);
+
+  const pick = () => file.click();
+  thumb.addEventListener('click', pick);
+  card.querySelector('.load-btn').addEventListener('click', pick);
+
+  file.addEventListener('change', () => {
+    const f = file.files && file.files[0];
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = e => { img.onerror = null; img.src = e.target.result; thumb.classList.add('has-img'); };
+    reader.readAsDataURL(f);
+  });
+});
+
+/* ---------- Campo de estrellas (sobrio, respeta reduce-motion) ---------- */
+(function(){
+  const canvas = document.getElementById('stars');
+  const ctx = canvas.getContext('2d');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let w, h, stars, dpr;
+
+  function init(){
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    w = canvas.width  = innerWidth  * dpr;
+    h = canvas.height = innerHeight * dpr;
+    canvas.style.width = innerWidth + 'px';
+    canvas.style.height = innerHeight + 'px';
+    const count = Math.round((innerWidth * innerHeight) / 9000);
+    stars = Array.from({length: count}, () => ({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      r: (Math.random() * 1.1 + 0.25) * dpr,
+      a: Math.random() * 0.6 + 0.15,
+      t: Math.random() * Math.PI * 2,
+      ts: Math.random() * 0.018 + 0.004,
+      hue: Math.random() < 0.18 ? 'c' : 'w'
+    }));
+  }
+
+  function draw(){
+    ctx.clearRect(0, 0, w, h);
+    for (const s of stars){
+      s.t += s.ts;
+      const tw = s.a * (0.55 + 0.45 * Math.sin(s.t));
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = s.hue === 'c'
+        ? 'rgba(135,220,235,' + tw + ')'
+        : 'rgba(220,230,245,' + tw + ')';
+      ctx.fill();
+      if (!reduce){
+        s.y += 0.04 * dpr;
+        s.x -= 0.015 * dpr;
+        if (s.y > h) s.y = 0;
+        if (s.x < 0) s.x = w;
+      }
+    }
+    if (!reduce) requestAnimationFrame(draw);
+  }
+
+  init();
+  draw();
+  let rt;
+  addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { init(); if (reduce) draw(); }, 180); });
+})();
+</script>
+</body>
+</html>
